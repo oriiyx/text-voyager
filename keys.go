@@ -12,8 +12,9 @@ func (k keyMap) ShortHelp() []key.Binding {
 // key.Map interface.
 func (k keyMap) FullHelp() [][]key.Binding {
 	return [][]key.Binding{
-		{k.Up, k.Down, k.Left, k.Right}, // first column
-		{k.Help, k.Quit},                // second column
+		// {k.Up, k.Down, k.Left, k.Right}, // first column
+		{k.Help, k.Quit}, // second column
+		{k.Tab},
 	}
 }
 
@@ -26,6 +27,7 @@ type keyMap struct {
 	Right  key.Binding
 	Left   key.Binding
 	Enter  key.Binding
+	Tab    key.Binding
 	Help   key.Binding
 	Quit   key.Binding
 	Back   key.Binding
@@ -63,6 +65,10 @@ var keys = keyMap{
 	Enter: key.NewBinding(
 		key.WithKeys("enter"),
 		key.WithHelp("enter", "enter"),
+	),
+	Tab: key.NewBinding(
+		key.WithKeys("tab"),
+		key.WithHelp("tab", "tab"),
 	),
 	Help: key.NewBinding(
 		key.WithKeys("?"),

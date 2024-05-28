@@ -10,11 +10,13 @@ import (
 const APPEND = -1
 
 type column struct {
-	focus  bool
-	status status
-	list   list.Model
-	height int
-	width  int
+	focus        bool
+	status       status
+	list         list.Model
+	height       int
+	width        int
+	searchHeight int
+	searchWidth  int
 }
 
 func (c *column) Focus() {
@@ -49,18 +51,18 @@ func (c column) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
-		c.setSize(msg.Width, msg.Height)
-		c.list.SetSize(msg.Width/margin, msg.Height/2)
+		actualWidth := msg.Width - 5
+		c.setSize(actualWidth, msg.Height)
 	case tea.KeyMsg:
 		switch {
-		case key.Matches(msg, keys.Edit):
-			if len(c.list.VisibleItems()) != 0 {
-				task := c.list.SelectedItem().(Task)
-				f := NewForm(task.title, task.description)
-				f.index = c.list.Index()
-				f.col = c
-				return f.Update(nil)
-			}
+		// case key.Matches(msg, keys.Edit):
+		// 	if len(c.list.VisibleItems()) != 0 {
+		// 		task := c.list.SelectedItem().(Task)
+		// 		f := NewForm(task.title, task.description)
+		// 		f.index = c.list.Index()
+		// 		f.col = c
+		// 		return f.Update(nil)
+		// 	}
 		case key.Matches(msg, keys.New):
 			f := newDefaultForm()
 			f.index = APPEND
@@ -69,6 +71,13 @@ func (c column) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case key.Matches(msg, keys.Delete):
 			return c, c.DeleteCurrent()
 		case key.Matches(msg, keys.Enter):
+			if c.status == searchQueryView {
+				searchForm := newDefaultSearchForm()
+				searchForm.index = APPEND
+				return searchForm.Update(nil)
+				// selectQuery := c.list.SelectedItem().(Search)
+				// f :=
+			}
 			return c, c.MoveToNext()
 		}
 	}
@@ -78,6 +87,10 @@ func (c column) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (c column) View() string {
 	return c.getStyle().Render(c.list.View())
+}
+
+func (c column) SearchViewRender() string {
+	return c.getSearchStyle().Render(c.list.View())
 }
 
 func (c *column) DeleteCurrent() tea.Cmd {
@@ -97,8 +110,19 @@ func (c *column) Set(i int, t Task) tea.Cmd {
 	return c.list.InsertItem(APPEND, t)
 }
 
+func (c *column) SetSearch(i int, setSearch Search) tea.Cmd {
+	if i != APPEND {
+		return c.list.SetItem(i, setSearch)
+	}
+	return c.list.InsertItem(APPEND, setSearch)
+}
+
 func (c *column) setSize(width, height int) {
 	c.width = width / margin
+	c.height = height / 2
+
+	c.searchWidth = width
+	c.searchHeight = height / 100
 }
 
 func (c *column) getStyle() lipgloss.Style {
@@ -115,6 +139,22 @@ func (c *column) getStyle() lipgloss.Style {
 		Border(lipgloss.HiddenBorder()).
 		Height(c.height).
 		Width(c.width)
+}
+
+func (c *column) getSearchStyle() lipgloss.Style {
+	if c.Focused() {
+		return lipgloss.NewStyle().
+			Padding(1, 2).
+			Border(lipgloss.RoundedBorder()).
+			BorderForeground(lipgloss.Color("62")).
+			Height(c.searchHeight).
+			Width(c.searchWidth)
+	}
+	return lipgloss.NewStyle().
+		Padding(1, 2).
+		Border(lipgloss.HiddenBorder()).
+		Height(c.searchHeight).
+		Width(c.searchWidth)
 }
 
 type moveMsg struct {

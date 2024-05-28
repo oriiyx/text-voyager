@@ -16,9 +16,9 @@ type Board struct {
 }
 
 func NewBoard() *Board {
-	help := help.New()
-	help.ShowAll = true
-	return &Board{help: help, focused: searchQueryView}
+	helpView := help.New()
+	helpView.ShowAll = true
+	return &Board{help: helpView, focused: searchQueryView}
 }
 
 func (m *Board) Init() tea.Cmd {
@@ -41,6 +41,8 @@ func (m *Board) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, tea.Batch(cmds...)
 	case Form:
 		return m, m.cols[m.focused].Set(msg.index, msg.CreateTask())
+	case SearchForm:
+		return m, m.cols[m.focused].SetSearch(0, msg.CreateSearch())
 	case moveMsg:
 		return m, m.cols[m.focused.getNext()].Set(APPEND, msg.Task)
 	case tea.KeyMsg:
@@ -48,11 +50,7 @@ func (m *Board) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case key.Matches(msg, keys.Quit):
 			m.quitting = true
 			return m, tea.Quit
-		case key.Matches(msg, keys.Left):
-			m.cols[m.focused].Blur()
-			m.focused = m.focused.getPrev()
-			m.cols[m.focused].Focus()
-		case key.Matches(msg, keys.Right):
+		case key.Matches(msg, keys.Tab):
 			m.cols[m.focused].Blur()
 			m.focused = m.focused.getNext()
 			m.cols[m.focused].Focus()
@@ -72,14 +70,15 @@ func (m *Board) View() string {
 	if m.quitting {
 		return ""
 	}
+
 	if !m.loaded {
-		return "loading..."
+		return "Loading..."
 	}
-	board := lipgloss.JoinHorizontal(
+
+	boardHorizontal := lipgloss.JoinHorizontal(
 		lipgloss.Left,
-		m.cols[searchQueryView].View(),
 		m.cols[navigationView].View(),
 		m.cols[renderView].View(),
 	)
-	return lipgloss.JoinVertical(lipgloss.Left, board, m.help.View(keys))
+	return lipgloss.JoinVertical(lipgloss.Left, m.cols[searchQueryView].SearchViewRender(), boardHorizontal, m.help.View(keys))
 }

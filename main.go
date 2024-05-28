@@ -23,7 +23,7 @@ func (s status) getPrev() status {
 	return s - 1
 }
 
-const margin = 4
+const margin = 2
 
 var board *Board
 
