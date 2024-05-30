@@ -8,7 +8,7 @@ type CommandFunc func(*gocui.Gui, *gocui.View) error
 
 var COMMANDS = map[string]func(string, *App) CommandFunc{
 	"submit": func(_ string, a *App) CommandFunc {
-		return nil
+		return submit
 	},
 	"quit": func(_ string, _ *App) CommandFunc {
 		return quit

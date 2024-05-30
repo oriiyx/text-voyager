@@ -139,10 +139,6 @@ func main() {
 
 	err = app.SetKeys(g)
 
-	// if err := g.SetKeybinding("", gocui.KeyCtrlC, gocui.ModNone, quit); err != nil {
-	// 	log.Panicln(err)
-	// }
-
 	if err := g.MainLoop(); err != nil && err != gocui.ErrQuit {
 		log.Panicln(err)
 	}
