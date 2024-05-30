@@ -7,14 +7,17 @@ package main
 import (
 	"fmt"
 	"log"
+	"os"
 
 	"github.com/jroimartin/gocui"
 )
 
-var (
-	viewArr = []string{"Search", "Navigation", "Render"}
-	active  = 0
-)
+type ViewEditor struct {
+	app           *App
+	g             *gocui.Gui
+	backTabEscape bool
+	origEditor    gocui.Editor
+}
 
 var defaultEditor ViewEditor
 
@@ -34,7 +37,7 @@ const (
 
 var VIEWS = []string{
 	SearchPromptView,
-	NavigationView,
+	StatuslineView,
 }
 
 type viewProperties struct {
@@ -73,6 +76,7 @@ type App struct {
 }
 
 func quit(g *gocui.Gui, v *gocui.View) error {
+	fmt.Println("Quitting")
 	return gocui.ErrQuit
 }
 
@@ -95,7 +99,7 @@ func (a *App) Layout(g *gocui.Gui) error {
 			setViewProperties(v, name)
 		}
 	}
-	// refreshStatusLine(a, g)
+	refreshStatusLine(a, g)
 
 	return nil
 }
@@ -108,6 +112,12 @@ func refreshStatusLine(a *App, g *gocui.Gui) {
 }
 
 func main() {
+	file, err := os.OpenFile("debug.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	if err != nil {
+		log.Fatalln("Failed to open log file:", err)
+	}
+	log.SetOutput(file)
+
 	g, err := gocui.NewGui(gocui.OutputNormal)
 	if err != nil {
 		log.Panicln(err)
@@ -126,9 +136,12 @@ func main() {
 		g.Close()
 		log.Fatalf("Error configuring: %v", err)
 	}
-	if err := g.SetKeybinding("", gocui.KeyCtrlC, gocui.ModNone, quit); err != nil {
-		log.Panicln(err)
-	}
+
+	err = app.SetKeys(g)
+
+	// if err := g.SetKeybinding("", gocui.KeyCtrlC, gocui.ModNone, quit); err != nil {
+	// 	log.Panicln(err)
+	// }
 
 	if err := g.MainLoop(); err != nil && err != gocui.ErrQuit {
 		log.Panicln(err)

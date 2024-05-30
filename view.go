@@ -26,6 +26,11 @@ func (a *App) NextView(g *gocui.Gui, v *gocui.View) error {
 	return a.setView(g)
 }
 
+func (a *App) PrevView(g *gocui.Gui, v *gocui.View) error {
+	a.viewIndex = (a.viewIndex - 1 + len(VIEWS)) % len(VIEWS)
+	return a.setView(g)
+}
+
 func (a *App) setView(g *gocui.Gui) error {
 	a.closePopup(g, a.currentPopup)
 	_, err := g.SetCurrentView(VIEWS[a.viewIndex])
@@ -40,4 +45,14 @@ func (a *App) closePopup(g *gocui.Gui, viewname string) {
 		g.SetCurrentView(VIEWS[a.viewIndex%len(VIEWS)])
 		g.Cursor = true
 	}
+}
+
+func (a *App) setViewByName(g *gocui.Gui, name string) error {
+	for i, v := range VIEWS {
+		if v == name {
+			a.viewIndex = i
+			return a.setView(g)
+		}
+	}
+	return fmt.Errorf("View not found")
 }

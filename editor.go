@@ -7,13 +7,6 @@ type SingleLineEditor struct {
 	wuzzEditor gocui.Editor
 }
 
-type ViewEditor struct {
-	app           *App
-	g             *gocui.Gui
-	backTabEscape bool
-	origEditor    gocui.Editor
-}
-
 func (e *ViewEditor) Edit(v *gocui.View, key gocui.Key, ch rune, mod gocui.Modifier) {
 	// disable infinite down scroll
 	if key == gocui.KeyArrowDown && mod == gocui.ModNone {
