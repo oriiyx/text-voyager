@@ -47,4 +47,10 @@ var VIEW_POSITIONS = map[string]viewPosition{
 		position{1.0, -4},
 		position{1.0, 0},
 		position{1.0, -1}},
+	POPUP_VIEW: {
+		position{0.5, -9999}, // set before usage using len(msg)
+		position{0.5, -1},
+		position{0.5, -9999}, // set before usage using len(msg)
+		position{0.5, 1}},
+
 }

@@ -37,16 +37,6 @@ func (a *App) setView(g *gocui.Gui) error {
 	return err
 }
 
-func (a *App) closePopup(g *gocui.Gui, viewname string) {
-	_, err := g.View(viewname)
-	if err == nil {
-		a.currentPopup = ""
-		g.DeleteView(viewname)
-		g.SetCurrentView(VIEWS[a.viewIndex%len(VIEWS)])
-		g.Cursor = true
-	}
-}
-
 func (a *App) setViewByName(g *gocui.Gui, name string) error {
 	for i, v := range VIEWS {
 		if v == name {

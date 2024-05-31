@@ -31,6 +31,7 @@ const (
 	RENDER_VIEW      = "render"
 	HELP_VIEW        = "help"
 	StatuslineView   = "status-line"
+	POPUP_VIEW       = "popup_view"
 
 	SearchPromptPlaceholder = "search> "
 )
@@ -64,6 +65,13 @@ var VIEW_PROPERTIES = map[string]viewProperties{
 		wrap:     false,
 		editor:   nil,
 		text:     "",
+	},
+	POPUP_VIEW: {
+		title:    "Info",
+		frame:    true,
+		editable: false,
+		wrap:     false,
+		editor:   nil,
 	},
 }
 
@@ -112,7 +120,7 @@ func refreshStatusLine(a *App, g *gocui.Gui) {
 }
 
 func main() {
-	file, err := os.OpenFile("debug.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	file, err := os.OpenFile("debug.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0o666)
 	if err != nil {
 		log.Fatalln("Failed to open log file:", err)
 	}
@@ -137,7 +145,10 @@ func main() {
 		log.Fatalf("Error configuring: %v", err)
 	}
 
-	err = app.SetKeys(g)
+	app.Layout(g)
+	g.SetCurrentView(VIEWS[app.viewIndex])
+
+	_ = app.SetKeys(g)
 
 	if err := g.MainLoop(); err != nil && err != gocui.ErrQuit {
 		log.Panicln(err)

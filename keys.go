@@ -3,7 +3,6 @@ package main
 import (
 	"errors"
 	"fmt"
-	"log"
 	"strings"
 	"text/template"
 
@@ -88,12 +87,6 @@ func (a *App) setKey(g *gocui.Gui, keyStr, commandStr, viewName string) error {
 		return fmt.Errorf("Unknown command: %v", command)
 	}
 	keyFn := keyFnGen(commandArgs, a)
-	log.Println("------------------------")
-	log.Printf("%s", viewName)
-	log.Printf("%s", key)
-	log.Printf("%s", mod)
-	log.Printf("%s", keyFn)
-	log.Println("------------------------")
 
 	if err := g.SetKeybinding(viewName, key, mod, keyFn); err != nil {
 		return fmt.Errorf("Failed to set key '%v': %v", keyStr, err)
