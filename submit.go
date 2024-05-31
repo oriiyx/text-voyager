@@ -17,7 +17,10 @@ type ResultNavigationData struct {
 
 func (a *App) SubmitRequest(g *gocui.Gui, v *gocui.View) error {
 	log.Println("submitting")
-	popup(g, "Sending request..")
+	sl, _ := NewStatusLine("Searching...")
+	a.statusLine = sl
+	refreshStatusLine(a, g)
+
 	var googleParser *parser.GoogleResponseParser = &parser.GoogleResponseParser{}
 
 	var r *Request = &Request{
@@ -31,7 +34,6 @@ func (a *App) SubmitRequest(g *gocui.Gui, v *gocui.View) error {
 		return nil
 	}
 
-	log.Println(&r.SearchQuery)
 	c := colly.NewCollector(
 		// Set the User-Agent to mimic a real browser
 		colly.UserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"),
@@ -43,7 +45,7 @@ func (a *App) SubmitRequest(g *gocui.Gui, v *gocui.View) error {
 		RandomDelay: 5 * time.Second,
 	})
 
-	c.OnHTML("a[href] h3", func(e *colly.HTMLElement) {
+	c.OnHTML("#search a[href] h3", func(e *colly.HTMLElement) {
 		hrefElement := e.DOM.Parent()
 		href, exists := hrefElement.Attr("href")
 		if exists {
@@ -51,6 +53,7 @@ func (a *App) SubmitRequest(g *gocui.Gui, v *gocui.View) error {
 				title: e.Text,
 				url:   href,
 			}
+
 			r.ResultNavigationData = append(r.ResultNavigationData, resultData)
 		}
 	})
@@ -65,8 +68,8 @@ func (a *App) SubmitRequest(g *gocui.Gui, v *gocui.View) error {
 		}
 
 		r.GoogleParser.ParseRawElementString()
-
-		log.Println(r.GoogleParser.ParsedString)
+		ChangeViewText(g, RenderView, r.GoogleParser.ParsedString)
+		// log.Println(r.GoogleParser.ParsedString)
 	})
 
 	// Before making a request print "Visiting ..."
@@ -80,10 +83,17 @@ func (a *App) SubmitRequest(g *gocui.Gui, v *gocui.View) error {
 	})
 
 	// Start scraping on the target URL
-	c.Visit("https://www.google.com/search?q=" + r.URLEncodedSearchQuery() + "&hl=" + a.userLanguage + "&gl=" + a.userLocale + "&num=15")
+	c.Visit("https://www.google.com/search?q=" + r.URLEncodedSearchQuery() + "&hl=" + a.userLanguage + "&gl=" + a.userLocale + "&num=10")
 
 	g.CurrentView().Clear()
 	g.CurrentView().SetCursor(0, 0)
+
+	// log.Println(r.)
+	concatString := ""
+	for _, value := range r.ResultNavigationData {
+		concatString += value.title + "\n" + value.url + "\n\n"
+	}
+	ChangeViewText(g, NavigationView, concatString)
 
 	return nil
 }

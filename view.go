@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/jroimartin/gocui"
 )
@@ -13,10 +14,12 @@ func setViewProperties(v *gocui.View, name string) {
 	v.Wrap = VIEW_PROPERTIES[name].wrap
 	v.Editor = VIEW_PROPERTIES[name].editor
 	setViewTextAndCursor(v, VIEW_PROPERTIES[name].text)
+	log.Println(VIEW_PROPERTIES[name].text)
 }
 
 func setViewTextAndCursor(v *gocui.View, s string) {
 	v.Clear()
+	log.Printf("Printing the following: %s", s)
 	fmt.Fprint(v, s)
 	v.SetCursor(len(s), 0)
 }
@@ -45,4 +48,18 @@ func (a *App) setViewByName(g *gocui.Gui, name string) error {
 		}
 	}
 	return fmt.Errorf("View not found")
+}
+
+func ChangeViewText(g *gocui.Gui, view string, msg string) {
+	p := VIEW_PROPERTIES[view]
+	p.text = msg
+	VIEW_PROPERTIES[view] = p
+
+	v, err := setView(g, view)
+	if err != nil {
+		return
+	}
+
+	setViewProperties(v, view)
+	g.SetViewOnTop(view)
 }

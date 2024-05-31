@@ -27,16 +27,18 @@ const (
 
 	SearchPromptView = "prompt"
 	NavigationView   = "navigation"
-	RENDER_VIEW      = "render"
+	RenderView       = "render"
 	HELP_VIEW        = "help"
 	StatuslineView   = "status-line"
-	POPUP_VIEW       = "popup_view"
+	PopupView        = "popup_view"
 
 	SearchPromptPlaceholder = "search> "
 )
 
 var VIEWS = []string{
 	SearchPromptView,
+	NavigationView,
+	RenderView,
 	StatuslineView,
 }
 
@@ -57,6 +59,22 @@ var VIEW_PROPERTIES = map[string]viewProperties{
 		wrap:     false,
 		editor:   &SingleLineEditor{&defaultEditor},
 	},
+	NavigationView: {
+		title:    "Navigation",
+		frame:    true,
+		editable: false,
+		wrap:     false,
+		editor:   nil,
+		text:     "Test",
+	},
+	RenderView: {
+		title:    "Render",
+		frame:    true,
+		editable: false,
+		wrap:     false,
+		editor:   nil,
+		text:     "Render",
+	},
 	StatuslineView: {
 		title:    "",
 		frame:    false,
@@ -65,7 +83,7 @@ var VIEW_PROPERTIES = map[string]viewProperties{
 		editor:   nil,
 		text:     "",
 	},
-	POPUP_VIEW: {
+	PopupView: {
 		title:    "Info",
 		frame:    true,
 		editable: false,
@@ -99,6 +117,8 @@ func (a *App) Layout(g *gocui.Gui) error {
 
 	for _, name := range []string{
 		SearchPromptView,
+		NavigationView,
+		RenderView,
 		StatuslineView,
 	} {
 		if v, err := setView(g, name); err != nil {

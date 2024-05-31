@@ -36,21 +36,30 @@ var VIEW_POSITIONS = map[string]viewPosition{
 		position{0.0, 0},
 		position{0.0, 0},
 		position{1.0, -2},
-		position{0.0, 3}},
+		position{0.0, 2},
+	},
 	NavigationView: {
 		position{0.0, 0},
 		position{0.0, 3},
-		position{0.3, 0},
-		position{0.25, 0}},
+		position{0.2, 0},
+		position{1, -5},
+	},
+	RenderView: {
+		position{0.2, 3},
+		position{0.0, 3},
+		position{1, -2},
+		position{1, -5},
+	},
 	StatuslineView: {
 		position{0.0, -1},
 		position{1.0, -4},
 		position{1.0, 0},
-		position{1.0, -1}},
-	POPUP_VIEW: {
+		position{1.0, -1},
+	},
+	PopupView: {
 		position{0.5, -9999}, // set before usage using len(msg)
 		position{0.5, -1},
 		position{0.5, -9999}, // set before usage using len(msg)
-		position{0.5, 1}},
-
+		position{0.5, 1},
+	},
 }
