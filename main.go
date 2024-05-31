@@ -8,6 +8,9 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"os/exec"
+	"runtime"
+	"strings"
 
 	"github.com/jroimartin/gocui"
 )
@@ -79,6 +82,8 @@ type App struct {
 	viewIndex    int
 	historyIndex int
 	currentPopup string
+	userLocale   string
+	userLanguage string
 	statusLine   *StatusLine
 	config       *Config
 }
@@ -156,9 +161,55 @@ func main() {
 }
 
 func initApp(a *App, g *gocui.Gui) {
+	lang, loc := getLocale()
+
+	a.userLocale = lang
+	a.userLocale = loc
+
 	g.Cursor = true
 	g.InputEsc = false
 	g.BgColor = gocui.ColorDefault
 	g.FgColor = gocui.ColorDefault
 	g.SetManagerFunc(a.Layout)
+}
+
+func getLocale() (string, string) {
+	osHost := runtime.GOOS
+	defaultLang := "en"
+	defaultLoc := "US"
+	switch osHost {
+	case "windows":
+		// Exec powershell Get-Culture on Windows.
+		cmd := exec.Command("powershell", "Get-Culture | select -exp Name")
+		output, err := cmd.Output()
+		if err == nil {
+			langLocRaw := strings.TrimSpace(string(output))
+			langLoc := strings.Split(langLocRaw, "-")
+			lang := langLoc[0]
+			loc := langLoc[1]
+			return lang, loc
+		}
+	case "darwin":
+		// Exec shell Get-Culture on MacOS.
+		cmd := exec.Command("osascript", "-e", "user locale of (get system info)")
+		output, err := cmd.Output()
+		if err == nil {
+			langLocRaw := strings.TrimSpace(string(output))
+			langLoc := strings.Split(langLocRaw, "_")
+			lang := langLoc[0]
+			loc := langLoc[1]
+			return lang, loc
+		}
+	case "linux":
+		envlang, ok := os.LookupEnv("LANG")
+		if ok {
+			langLocRaw := strings.TrimSpace(envlang)
+			langLocRaw = strings.Split(envlang, ".")[0]
+			langLoc := strings.Split(langLocRaw, "_")
+			lang := langLoc[0]
+			loc := langLoc[1]
+			return lang, loc
+		}
+	}
+	return defaultLang, defaultLoc
 }

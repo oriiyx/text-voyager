@@ -80,12 +80,10 @@ func (a *App) SubmitRequest(g *gocui.Gui, v *gocui.View) error {
 	})
 
 	// Start scraping on the target URL
-	c.Visit("https://www.google.com/search?q=" + r.SearchQuery + "&hl=en&gl=sl&num=15")
+	c.Visit("https://www.google.com/search?q=" + r.URLEncodedSearchQuery() + "&hl=" + a.userLanguage + "&gl=" + a.userLocale + "&num=15")
 
 	g.CurrentView().Clear()
 	g.CurrentView().SetCursor(0, 0)
-
-	// log.Printf("%#v", r.ResultNavigationData)
 
 	return nil
 }
