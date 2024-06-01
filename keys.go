@@ -49,7 +49,7 @@ func (a *App) LoadConfig() error {
 		return err
 	}
 	a.config = conf
-	sl, err := NewStatusLine("Press enter to start browsing")
+	sl, err := NewStatusLine("Searching google")
 	if err != nil {
 		a.config.Keys = DefaultKeys
 		return err
@@ -82,7 +82,7 @@ func (a *App) setKey(g *gocui.Gui, keyStr, commandStr, viewName string) error {
 	if len(commandParts) == 2 {
 		commandArgs = commandParts[1]
 	}
-	keyFnGen, found := COMMANDS[command]
+	keyFnGen, found := CommandFunctions[command]
 	if !found {
 		return fmt.Errorf("Unknown command: %v", command)
 	}
@@ -110,14 +110,14 @@ func parseKey(k string) (interface{}, gocui.Modifier, error) {
 		return rune(k[0]), mod, nil
 	}
 
-	key, found := KEYS[k]
+	key, found := GlobalKeys[k]
 	if !found {
 		return 0, 0, fmt.Errorf("Unknown key: %v", k)
 	}
 	return key, mod, nil
 }
 
-var KEYS = map[string]gocui.Key{
+var GlobalKeys = map[string]gocui.Key{
 	"F1":             gocui.KeyF1,
 	"F2":             gocui.KeyF2,
 	"F3":             gocui.KeyF3,

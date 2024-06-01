@@ -8,13 +8,13 @@ import (
 )
 
 func setViewProperties(v *gocui.View, name string) {
-	v.Title = VIEW_PROPERTIES[name].title
-	v.Frame = VIEW_PROPERTIES[name].frame
-	v.Editable = VIEW_PROPERTIES[name].editable
-	v.Wrap = VIEW_PROPERTIES[name].wrap
-	v.Editor = VIEW_PROPERTIES[name].editor
-	setViewTextAndCursor(v, VIEW_PROPERTIES[name].text)
-	log.Println(VIEW_PROPERTIES[name].text)
+	v.Title = ViewProperties[name].title
+	v.Frame = ViewProperties[name].frame
+	v.Editable = ViewProperties[name].editable
+	v.Wrap = ViewProperties[name].wrap
+	v.Editor = ViewProperties[name].editor
+	setViewTextAndCursor(v, ViewProperties[name].text)
+	log.Println(ViewProperties[name].text)
 }
 
 func setViewTextAndCursor(v *gocui.View, s string) {
@@ -51,9 +51,9 @@ func (a *App) setViewByName(g *gocui.Gui, name string) error {
 }
 
 func ChangeViewText(g *gocui.Gui, view string, msg string) {
-	p := VIEW_PROPERTIES[view]
+	p := ViewProperties[view]
 	p.text = msg
-	VIEW_PROPERTIES[view] = p
+	ViewProperties[view] = p
 
 	v, err := setView(g, view)
 	if err != nil {

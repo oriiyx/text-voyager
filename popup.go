@@ -5,14 +5,14 @@ import (
 )
 
 func popup(g *gocui.Gui, msg string) {
-	pos := VIEW_POSITIONS[PopupView]
+	pos := ViewPositions[PopupView]
 	pos.x0.abs = -len(msg)/2 - 1
 	pos.x1.abs = len(msg)/2 + 1
-	VIEW_POSITIONS[PopupView] = pos
+	ViewPositions[PopupView] = pos
 
-	p := VIEW_PROPERTIES[PopupView]
+	p := ViewProperties[PopupView]
 	p.text = msg
-	VIEW_PROPERTIES[PopupView] = p
+	ViewProperties[PopupView] = p
 
 	v, err := setView(g, PopupView)
 	if err != nil {
@@ -25,10 +25,10 @@ func popup(g *gocui.Gui, msg string) {
 }
 
 func closeRealPopup(g *gocui.Gui) {
-	pos := VIEW_POSITIONS[PopupView]
+	pos := ViewPositions[PopupView]
 	pos.x0.abs = -9999
 	pos.x1.abs = -9999
-	VIEW_POSITIONS[PopupView] = pos
+	ViewPositions[PopupView] = pos
 
 	v, err := setView(g, PopupView)
 	if err != nil {

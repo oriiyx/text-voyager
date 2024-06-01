@@ -6,7 +6,7 @@ import (
 
 type CommandFunc func(*gocui.Gui, *gocui.View) error
 
-var COMMANDS = map[string]func(string, *App) CommandFunc{
+var CommandFunctions = map[string]func(string, *App) CommandFunc{
 	"submit": func(_ string, a *App) CommandFunc {
 		return a.SubmitRequest
 	},

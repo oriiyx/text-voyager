@@ -28,7 +28,7 @@ const (
 	SearchPromptView = "prompt"
 	NavigationView   = "navigation"
 	RenderView       = "render"
-	HELP_VIEW        = "help"
+	HelpView         = "help"
 	StatuslineView   = "status-line"
 	PopupView        = "popup_view"
 
@@ -51,7 +51,7 @@ type viewProperties struct {
 	text     string
 }
 
-var VIEW_PROPERTIES = map[string]viewProperties{
+var ViewProperties = map[string]viewProperties{
 	SearchPromptView: {
 		title:    "Search",
 		frame:    true,
@@ -110,7 +110,7 @@ func quit(g *gocui.Gui, v *gocui.View) error {
 func (a *App) Layout(g *gocui.Gui) error {
 	maxX, maxY := g.Size()
 
-	if maxX < MIN_WIDTH || maxY < MIN_HEIGHT {
+	if maxX < MinWidth || maxY < MinHeight {
 		fmt.Println("Terminal is too small")
 		return nil
 	}

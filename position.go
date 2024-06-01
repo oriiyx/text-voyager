@@ -3,8 +3,8 @@ package main
 import "github.com/jroimartin/gocui"
 
 const (
-	MIN_WIDTH  = 60
-	MIN_HEIGHT = 20
+	MinWidth  = 60
+	MinHeight = 20
 )
 
 type position struct {
@@ -23,7 +23,7 @@ func (p position) getCoordinate(max int) int {
 
 func setView(g *gocui.Gui, viewName string) (*gocui.View, error) {
 	maxX, maxY := g.Size()
-	position := VIEW_POSITIONS[viewName]
+	position := ViewPositions[viewName]
 	return g.SetView(viewName,
 		position.x0.getCoordinate(maxX+1),
 		position.y0.getCoordinate(maxY+1),
@@ -31,7 +31,7 @@ func setView(g *gocui.Gui, viewName string) (*gocui.View, error) {
 		position.y1.getCoordinate(maxY+1))
 }
 
-var VIEW_POSITIONS = map[string]viewPosition{
+var ViewPositions = map[string]viewPosition{
 	SearchPromptView: {
 		position{0.0, 0},
 		position{0.0, 0},
